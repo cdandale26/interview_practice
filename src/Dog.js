@@ -1,16 +1,22 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const Dog = () => {
-  const [dog, setDog] = useState({});
-  const [dogInfo, setDogInfo] = useState([]);
+  const [allDog, setAllDog] = useState([]);
+
+  const fetchAllDog = async () => {
+    let newDog = await fetchData();
+    setAllDog([...allDog, newDog]);
+  };
+
+  console.log(`I am newDog ${allDog}`);
 
   const fetchData = async () => {
     return await axios
       .get("https://dog.ceo/api/breeds/image/random")
       .then((response) => {
-        setDog(response.data);
-        setDogInfo([...dog, response.data]);
+        return response.data;
       })
       .catch((error) => {
         console.log(error);
@@ -18,14 +24,17 @@ const Dog = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData().then((response) => {
+      setAllDog([response]);
+    });
   }, []);
 
   return (
     <div>
-      <button>Click me for next Dog</button>
-      <img src={dog.message} alt="cute_puppy" />
-      {dogInfo.length}
+      <button onClick={() => fetchAllDog()}>Click for nextDog</button>
+      {allDog.map((dogs, idx) => (
+        <img key={idx} src={dogs.message} alt="cute_pup" />
+      ))}
     </div>
   );
 };

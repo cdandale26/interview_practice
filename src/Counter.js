@@ -1,15 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 const Counter = () => {
   const [counter, setCounter] = useState(0);
 
+  const increment = () => {
+    setCounter(counter + 1);
+  };
+
+  const decrement = () => {
+    setCounter(counter - 1);
+  };
+
   return (
-    <>
-      <h2>Counter</h2>
-      <button onClick={() => setCounter(counter + 1)}>Increment </button>
-      <button onClick={() => setCounter(counter - 1)}>Decrement </button>
-      <h5>Counter : {counter}</h5>
-    </>
+    <div>
+      <h1>counter for the website: {counter}</h1>
+      <button onClick={increment}>Increment</button>
+      <button onClick={decrement}>Decrement</button>
+    </div>
   );
 };
 

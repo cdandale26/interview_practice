@@ -1,52 +1,61 @@
-//https://randomuser.me/api
-
+import React from "react";
 import axios from "axios";
-import React, { useState, useEffect } from "react";
-
-const fetchRandomData = (pageNumber) => {
-  return axios
-    .get(`https://randomuser.me/api?page=${pageNumber}`)
-    .then((res) => {
-      return res.data;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
+import "./App.css";
+import { useState, useEffect } from "react";
 
 const RandomUser = () => {
-  const [userInfo, setUserInfo] = useState([]);
-  const [nextPage, setNextPage] = useState(1);
+  const [allUser, setAllUser] = useState([]);
 
-  const getFullUserName = (name) => {
-    const {
-      name: { title, first, last },
-      gender,
-    } = name;
-    return `Name: ${title} ${last}, ${first} Gender: ${gender}`;
+  const fetchAllUser = async () => {
+    let newUser = await fetchData();
+    setAllUser([...allUser, newUser]);
   };
 
-  const fetchNextUser = () => {
-    fetchRandomData(nextPage).then((randomData) => {
-      const newUserData = [...userInfo, ...randomData.results];
-      setUserInfo(newUserData);
-      setNextPage(randomData.info.page + 1);
-    });
+  const fetchData = async () => {
+    return await axios
+      .get("https://randomuser.me/api")
+      .then((response) => {
+        console.log(response.data.results);
+        return response.data.results;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   useEffect(() => {
-    fetchNextUser();
+    fetchData().then((response) => {
+      setAllUser([response]);
+    });
   }, []);
 
   return (
-    <div>
-      <h2>Geting RandomUsers</h2>
-      <h5>Names of the Users:</h5>
-      <button onClick={() => fetchNextUser()}>Fetch Next User</button>
-      {userInfo.map((person, idx) => (
-        <div key="idx">
-          <p>{getFullUserName(person)}</p>
-          <img src={person.picture.large} />
+    <div className="random_user_section">
+      <h1>Getting Random Users</h1>
+      <button className="userbutton" onClick={() => fetchAllUser()}>
+        Next User
+      </button>
+      {allUser.map((person, idx) => (
+        <div key={idx} className="information">
+          <div className="profile_details">
+            <h3>
+              Name: {person[0].name.title} {person[0].name.first}{" "}
+              {person[0].name.last}
+            </h3>
+            <h5>Email: {person[0].email}</h5>
+            <h5>
+              Address: {person[0].location.city}, {person[0].location.state},
+              {person[0].location.country} : {person[0].location.postcode}
+            </h5>
+
+            <h5>Contact:</h5>
+            <h6>Cell: {person[0].cell} </h6>
+            <h6>Home: {person[0].phone} </h6>
+          </div>
+
+          <div className="profile_picture">
+            <img src={person[0].picture.large} alt="profilepic" />
+          </div>
         </div>
       ))}
     </div>
